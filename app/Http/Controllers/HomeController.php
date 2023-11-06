@@ -13,18 +13,21 @@ class HomeController extends Controller
 
         $user = Auth::user();
 
+        $jmlHadir = Absensi::where('keterangan', '=', 'hadir');
+        $jmlkaryawan = User::where('role', '!=', 'admin');
+
         $isAdminAccess = false;
 
         if ($user->role == 'admin') {
             $isAdminAccess = true;
-
-            $jmlHadir = Absensi::where('keterangan', '=', 'hadir')->count();
-            $jmlkaryawan = User::where('role', '!=', 'admin')->count();
         } else {
             $kodeKaryawan = $user->kode_karyawan;
-            $jmlHadir = Absensi::where('kode_karyawan', $kodeKaryawan)->where('keterangan', '=', 'hadir')->count();
-            $jmlkaryawan = User::where('role', '!=', 'admin')->count();
+
+            $jmlHadir = $jmlHadir->where('kode_karyawan', $kodeKaryawan)->where('keterangan', '=', 'hadir');
         }
+
+        $jmlHadir = $jmlHadir->count();
+        $jmlkaryawan = $jmlkaryawan->count();
 
         return view('admin.dashboard', ['jmlHadir' => $jmlHadir, 'jmlkaryawan' => $jmlkaryawan, 'isAdminAccess' => $isAdminAccess]);
     }
