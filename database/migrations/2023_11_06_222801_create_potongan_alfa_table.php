@@ -15,8 +15,6 @@ class CreatePotonganAlfaTable extends Migration
     {
         Schema::create('potongan_alfa', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
-            $table->id();
             $table->string('id_jabatan')->nullable();
             $table->string('jml')->nullable();
             $table->timestamps();
