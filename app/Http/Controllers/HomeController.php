@@ -3,18 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absensi;
+use App\Models\Karyawan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    public function index() {
+    public function index()
+    {
 
-        $user = Auth::user();
+        $user = Auth::guard('karyawan')->user();
 
         $jmlHadir = Absensi::where('keterangan', '=', 'hadir');
-        $jmlkaryawan = User::where('role', '!=', 'admin');
+        $jmlkaryawan = Karyawan::where('role', '!=', 'admin');
 
         $isAdminAccess = false;
 

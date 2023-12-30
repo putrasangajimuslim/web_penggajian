@@ -17,9 +17,9 @@ class AdminOnlyMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check()) {
+        if (Auth::guard('karyawan')->check()) {
             // Periksa apakah pengguna adalah admin
-            if (Auth::user()->role == 'admin') {
+            if (Auth::guard('karyawan')->user()->role == 'admin') {
                 return $next($request);
             }
         }

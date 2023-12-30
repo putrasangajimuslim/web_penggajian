@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Absensi;
+use App\Models\Karyawan;
 use App\Models\Kelola;
 use App\Models\PotonganAlfa;
 use App\Models\User;
@@ -12,11 +13,12 @@ use Illuminate\Support\Facades\Auth;
 
 class KehadiranController extends Controller
 {
-    public function index() {
-        $user = Auth::user();
+    public function index()
+    {
+        $user = Auth::guard('karyawan')->user();
 
         $isAdminAccess = false;
-    
+
         if ($user->role == 'admin') {
             $kehadirans = Absensi::all();
 
@@ -67,18 +69,20 @@ class KehadiranController extends Controller
         return view('admin.absen.index', ['kehadirans' => $kehadirans, 'isAdminAccess' => $isAdminAccess]);
     }
 
-    public function create() {
-        $kodekaryawans = User::get();
+    public function create()
+    {
+        $kodekaryawans = Karyawan::get();
         return view('admin.absen.create', ['kodekaryawans' => $kodekaryawans]);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $validateData = $request->validate([
             'kode_karyawan' => 'required',
-       ]);
+        ]);
 
-       $month = date('m');
-       $years = date('Y');
+        $month = date('m');
+        $years = date('Y');
 
         $absen = new Absensi();
         $absen->kode_karyawan = $request->kode_karyawan;
@@ -90,12 +94,12 @@ class KehadiranController extends Controller
             $absen->keterangan = 'hadir';
 
             $cekKelola = Kelola::where('kode_karyawan', $request->kode_karyawan)
-                                    ->where('bulan', $month)
-                                    ->where('tahun', $years)
-                                    ->first();
+                ->where('bulan', $month)
+                ->where('tahun', $years)
+                ->first();
 
-            $user = User::where('kode_karyawan', $request->kode_karyawan)->with('jabatan')->first();
-            
+            $user = Karyawan::where('kode_karyawan', $request->kode_karyawan)->with('jabatan')->first();
+
             if ($cekKelola) {
                 // Data sudah ada, lakukan pembaruan
                 $cekKelola->update([
@@ -122,28 +126,27 @@ class KehadiranController extends Controller
             $absen->keterangan = $request->keterangan;
 
             $kelola = Kelola::where('kode_karyawan', $request->kode_karyawan)
-                                ->where('bulan', $month)
-                                ->where('tahun', $years)
-                                ->first();
+                ->where('bulan', $month)
+                ->where('tahun', $years)
+                ->first();
 
-            $user = User::where('kode_karyawan', $kelola->kode_karyawan)->first();
+            $user = Karyawan::where('kode_karyawan', $kelola->kode_karyawan)->first();
 
             $potonganAlfa = PotonganAlfa::where('id_jabatan', $user->id_jabatan)->first();
 
             if ($request->keterangan == 'alfa') {
-                
+
                 $accumulationAlfa = $kelola->gaji_bersih - intval($potonganAlfa->jml);
                 $kelola->gaji_bersih = $accumulationAlfa;
                 if (!empty($kelola->jml_alfa)) {
                     $jmlAlfaInt = intval($kelola->jml_alfa); // Menggunakan intval() untuk mengonversi string menjadi integer
-                    $jmlAlfaInt++; 
+                    $jmlAlfaInt++;
 
                     $kelola->jml_alfa = $jmlAlfaInt;
-
                 } else {
                     $kelola->jml_alfa = 1;
                 }
-                
+
                 $kelola->save();
             }
         }
@@ -153,14 +156,16 @@ class KehadiranController extends Controller
         return redirect()->back()->with('message', 'Berhasil Rekam Kehadiran');
     }
 
-    public function edit($id) {
-        $kodekaryawans = User::get();
+    public function edit($id)
+    {
+        $kodekaryawans = Karyawan::get();
         $absen = Absensi::where('id', $id)->first();
 
         return view('admin.absen.edit', ['absen' => $absen, 'kodekaryawans' => $kodekaryawans]);
     }
 
-    public function update(Request $request) {
+    public function update(Request $request)
+    {
         $id = $request->id_absen;
         $kodeKaryawan = $request->kode_karyawan;
         $jamMasuk = $request->jam_masuk;
@@ -173,12 +178,12 @@ class KehadiranController extends Controller
             $ket = 'hadir';
 
             $cekKelola = Kelola::where('kode_karyawan', $kodeKaryawan)
-                                    ->where('bulan', $month)
-                                    ->where('tahun', $years)
-                                    ->first();
+                ->where('bulan', $month)
+                ->where('tahun', $years)
+                ->first();
 
-            $user = User::where('kode_karyawan', $kodeKaryawan)->with('jabatan')->first();
-            
+            $user = Karyawan::where('kode_karyawan', $kodeKaryawan)->with('jabatan')->first();
+
             if ($cekKelola) {
                 // Data sudah ada, lakukan pembaruan
                 $cekKelola->update([
@@ -203,11 +208,11 @@ class KehadiranController extends Controller
             }
         } else {
             $kelola = Kelola::where('kode_karyawan', $kodeKaryawan)
-            ->where('bulan', $month)
-            ->where('tahun', $years)
-            ->first();
+                ->where('bulan', $month)
+                ->where('tahun', $years)
+                ->first();
 
-            $user = User::where('kode_karyawan', $kelola->kode_karyawan)->first();
+            $user = Karyawan::where('kode_karyawan', $kelola->kode_karyawan)->first();
 
             $potonganAlfa = PotonganAlfa::where('id_jabatan', $user->id_jabatan)->first();
 
@@ -216,7 +221,7 @@ class KehadiranController extends Controller
                 $kelola->gaji_bersih = $accumulation;
                 if (!empty($kelola->jml_alfa)) {
                     $jmlAlfaInt = intval($kelola->jml_alfa); // Menggunakan intval() untuk mengonversi string menjadi integer
-                    $jmlAlfaInt++; 
+                    $jmlAlfaInt++;
 
                     $kelola->jml_alfa = $jmlAlfaInt;
                 } else {
@@ -226,7 +231,7 @@ class KehadiranController extends Controller
                 $accumulation = ($kelola->gaji_bersih + $potonganAlfa->jml);
                 if (!empty($kelola->jml_alfa)) {
                     $jmlAlfaInt = intval($kelola->jml_alfa); // Menggunakan intval() untuk mengonversi string menjadi integer
-                    $jmlAlfaInt--; 
+                    $jmlAlfaInt--;
 
                     $kelola->jml_alfa = $jmlAlfaInt;
                 }
@@ -247,7 +252,8 @@ class KehadiranController extends Controller
         return redirect()->route('kehadiran.index')->with('message', 'Berhasil Update Absensi' . $kodeKaryawan);
     }
 
-    public function cekKehadiran(Request $request) {
+    public function cekKehadiran(Request $request)
+    {
 
         $kodeKaryawan = $request->kode_karyawan;
 
@@ -270,7 +276,8 @@ class KehadiranController extends Controller
         ]);
     }
 
-    public function rekamKehadiran(Request $request) {
+    public function rekamKehadiran(Request $request)
+    {
 
         $kodeKaryawan = $request->replace_kode_karyawan;
         $typeRekam = $request->type_rekam;
@@ -288,12 +295,12 @@ class KehadiranController extends Controller
             $typeMessage = 'Clock In';
 
             $cekKelola = Kelola::where('kode_karyawan', $kodeKaryawan)
-                                    ->where('bulan', $month)
-                                    ->where('tahun', $years)
-                                    ->first();
+                ->where('bulan', $month)
+                ->where('tahun', $years)
+                ->first();
 
-            $user = User::where('kode_karyawan', $kodeKaryawan)->with('jabatan')->first();
-            
+            $user = Karyawan::where('kode_karyawan', $kodeKaryawan)->with('jabatan')->first();
+
             if ($cekKelola) {
                 // Data sudah ada, lakukan pembaruan
                 $cekKelola->update([
@@ -330,7 +337,8 @@ class KehadiranController extends Controller
         return redirect()->back()->with('message', 'Berhasil Rekam Kehadiran ' . $typeMessage);
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
         Absensi::find($id)->delete();
 
         return redirect()->route('kehadiran.index')->with('message', 'Berhasil Delete Absensi');

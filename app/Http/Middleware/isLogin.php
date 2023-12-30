@@ -17,7 +17,7 @@ class isLogin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check()) {
+        if (Auth::guard('karyawan')->check()) {
             return $next($request);
         }
 

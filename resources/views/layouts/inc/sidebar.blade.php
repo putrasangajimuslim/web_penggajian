@@ -12,14 +12,14 @@
     <hr class="sidebar-divider">
 
     @php
-        $privilage = Auth()->user();
+        $privilage = Auth::guard('karyawan')->user()->role;
     @endphp
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
     
-    @if ($privilage->role === 'admin')
+    @if ($privilage === 'admin')
         <li class="nav-item {{ Route::currentRouteName() === 'dashboard' ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('dashboard')}}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
