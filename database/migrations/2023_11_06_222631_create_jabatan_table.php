@@ -15,8 +15,8 @@ class CreateJabatanTable extends Migration
     {
         Schema::create('jabatan', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_jabatan')->nullable();
-            $table->string('nama_jabatan')->nullable();
+            $table->string('kode_jabatan', 5)->nullable();
+            $table->string('nama_jabatan', 30)->nullable();
             $table->integer('gaji_pokok')->default(0);
             // $table->integer('uang_makan')->default(0);
             $table->integer('potongan')->default(0);

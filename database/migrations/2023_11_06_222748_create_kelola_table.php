@@ -15,11 +15,11 @@ class CreateKelolaTable extends Migration
     {
         Schema::create('kelola', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_karyawan')->nullable();
-            $table->string('bulan')->nullable();
-            $table->string('tahun')->nullable();
-            $table->string('jml_kehadiran')->nullable();
-            $table->string('jml_alfa')->nullable();
+            $table->string('kode_karyawan', 11)->nullable();
+            $table->string('bulan', 15)->nullable();
+            $table->string('tahun', 4)->nullable();
+            $table->string('jml_kehadiran', 3)->nullable();
+            $table->string('jml_alfa', 3)->nullable();
             $table->integer('gaji_pokok')->default(0);
             $table->integer('uang_makan')->default(0);
             $table->integer('bonus')->default(0);

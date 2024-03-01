@@ -15,10 +15,10 @@ class CreateAbsenTable extends Migration
     {
         Schema::create('absen', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_karyawan')->nullable();
+            $table->string('kode_karyawan', 11)->nullable();
             $table->dateTime('jam_masuk')->nullable();
             $table->dateTime('jam_keluar')->nullable();
-            $table->string('keterangan')->nullable();
+            $table->string('keterangan', 8)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -15,17 +15,17 @@ class CreateUsersTable extends Migration
     {
         Schema::create('karyawan', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_karyawan')->nullable();
-            $table->string('nama')->nullable();
+            $table->string('kode_karyawan', 11)->nullable();
+            $table->string('nama', 30)->nullable();
             $table->date('tgl_lahir')->nullable();
-            $table->integer('status')->nullable();
-            $table->string('no_hp')->nullable();
-            $table->longText('alamat')->nullable();
-            $table->string('jenis_kelamin')->nullable();
-            $table->string('password')->nullable();
-            $table->string('role')->nullable();
-            $table->string('id_jabatan')->nullable();
-            $table->string('email')->unique()->nullable();
+            $table->tinyInteger('status')->nullable(); // Mengubah tipe data status menjadi tinyInteger
+            $table->string('no_hp', 13)->nullable();
+            $table->text('alamat')->nullable(); // Mengubah tipe data alamat menjadi text
+            $table->string('jenis_kelamin', 10)->nullable();
+            $table->string('password')->nullable(); // Menghapus batasan panjang untuk kolom password
+            $table->string('role', 10)->nullable();
+            $table->string('id_jabatan', 5)->nullable();
+            $table->string('email', 30)->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
